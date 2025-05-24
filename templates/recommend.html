@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Book Recommender System</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <style>
+        body {
+            background-color: #f5f5f5;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .navbar {
+            background-color: #8262ea;
+            border: none;
+            border-radius: 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar-brand {
+            color: #ffffff !important;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .navbar-nav > li > a {
+            color: #ffffff !important;
+        }
+
+        .navbar-nav > li > a:hover {
+            background-color: #8262ea;
+        }
+
+        .container {
+            margin-top: 30px;
+        }
+
+        h1 {
+            font-size: 42px;
+            font-weight: bold;
+            color: #333333;
+            margin-bottom: 20px;
+        }
+
+        .form-control {
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        .btn-warning {
+            background-color: #f0ad4e;
+            border: none;
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .btn-warning:hover {
+            background-color: #ec971f;
+        }
+
+        .search-section {
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .book {
+            background-color: #ffffff;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px;
+            color: #333333;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .book:hover {
+            transform: scale(1.05);
+        }
+
+        .book img {
+            height: 200px;
+            width: auto;
+            margin-bottom: 10px;
+            border-radius: 5px;
+        }
+
+        .recommendations {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+
+        h3 {
+            color: #4a90e2;
+            margin-top: 30px;
+        }
+
+        .message {
+            color: #d9534f;
+            font-size: 18px;
+            margin-top: 20px;
+        }
+
+        #loading-spinner {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        #loading-spinner .spinner {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #8262ea;
+            border-radius: 50%;
+            width: 70px;
+            height: 70px;
+            animation: spin 1s linear infinite;
+            margin: auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="loading-spinner">
+        <div class="spinner"></div>
+    </div>
+
+    <nav class="navbar navbar-default">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand">My Book Recommender</a>
+            </div>
+            <ul class="nav navbar-nav">
+                <li><a href="/">Home</a></li>
+                <li><a href="/recommend">Recommend</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="search-section">
+            <div class="row">
+                <div class="col-md-12">
+                    <h1>Recommend Books</h1>
+                    <form action="/recommend_books" method="post">
+                        <input name="user_input" type="text" class="form-control" placeholder="Enter book title or keyword"><br>
+                        <input type="submit" class="btn btn-lg btn-warning" value="Search">
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            {% if message %}
+                <p class="message">{{ message }}</p>
+            {% endif %}
+
+            {% if data %}
+                {% for block in data %}
+                    <h3>Matched recommendations for: "{{ block.matched_title }}"</h3>
+                    <div class="recommendations">
+                        {% for book in block.recommendations %}
+                            <div class="book col-md-2 col-sm-4 col-xs-6">
+                                <img src="{{ book.image }}" alt="{{ book.title }}">
+                                <p><strong>{{ book.title }}</strong></p>
+                                <p>{{ book.author }}</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <hr style="border-color: #ddd;">
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.querySelector('form');
+            const spinner = document.getElementById('loading-spinner');
+
+            form.addEventListener('submit', function () {
+                spinner.style.display = 'flex';
+            });
+        });
+    </script>
+
+</body>
+</html>
